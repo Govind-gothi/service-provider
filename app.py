@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request,url_for,redirect
+from flask import Flask, render_template, request,url_for,redirect,flash
 import mysql.connector
 import re
 
 app = Flask(__name__)
+app.secret_key = ' '
 
 @app.route('/signup', methods=['GET','POST'])
 def signup():
@@ -256,6 +257,59 @@ def get_data_from_db(**kwargs):
     response = mycursor.fetchone()
     mycursor.close()
     return response
+
+
+@app.route('/update_password/<int:CustomerID>', methods=['GET', 'POST'])
+def update_password(CustomerID):
+    # Handle GET request: Display the form
+    if request.method == "GET":
+        # Get user data from DB to pre-fill or display on the form
+        account = get_data_from_db(CustomerID=CustomerID)
+        return render_template('more_setting.html', account=account)
+
+    # Handle POST request: Process the form submission
+    if request.method == 'POST':
+        # Establish database connection
+        mydb = mysql.connector.connect(
+            host="127.0.0.1",
+            port="3306",
+            user="root",
+            password="54321",
+            database="user_db"
+        )
+        if 'new_password' in request.form and 'confirm_password' in request.form:
+            # Get form data for new password and confirmation
+            new_password = request.form['new_password']
+            confirm_password = request.form['confirm_password']
+
+            # Check if new_password and confirm_password are the same
+            if new_password == confirm_password:
+                try:
+                    mycursor = mydb.cursor()
+                    # Execute the update query
+                    mycursor.execute("UPDATE service_provider SET Password=%s WHERE CustomerID=%s", (new_password, CustomerID))
+                    mydb.commit() 
+                    mycursor.close()
+                    flash('Password updated successfully!', 'success')
+                    print(f"Password for CustomerID {CustomerID} updated successfully.")
+                except mysql.connector.Error as err:
+                    # Handle database errors
+                    print(f"Error: {err}")
+                    # Add an error message here
+                    flash(f'Error updating password: {err}', 'danger')
+                finally:
+                    mydb.close() # Close the database connection
+            else:
+                # Passwords do not match
+                print("New password and confirm password do not match.")
+                flash('New password and confirm password are not same!', 'danger')
+
+        return redirect(url_for('update_password', CustomerID=CustomerID))
+    return redirect(url_for('update_password', CustomerID=CustomerID))
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

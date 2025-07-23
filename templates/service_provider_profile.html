@@ -2200,12 +2200,15 @@
                   <h3 class="mb-0">My account</h3>
                 </div>
                 <div class="col-4 text-right">
-                  <a href="#!" class="btn btn-sm btn-primary">More Settings</a>
+                  <form action="/update_password/{{account[0]}}" method="GET">
+                    <button class="btn btn-sm btn-primary" type="submit">More Settings12</button>
+                    <!-- <button class="btn btn-info" type="submit">Update</button> -->
+                  </form>
                 </div>
               </div>
-            </div>
+            </div>            
             <div class="card-body">
-              <form action="/update_profile/3" method="POST">
+              <form action="/update_profile/{{account[0]}}" method="POST">
                 <h6 class="heading-small text-muted mb-4">User information</h6>
                 <div class="pl-lg-4">
                   <div class="row">

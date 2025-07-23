@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Settings</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f8f6ff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #fff;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar h2 {
+            color: #5e3bee;
+            font-size: 22px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .sidebar ul li.active {
+            color: #5e3bee;
+            font-weight: bold;
+        }
+
+        .main {
+            margin-left: 260px;
+            padding: 40px;
+        }
+
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background: #ecebfb;
+            color: #5e3bee;
+            font-weight: bold;
+        }
+
+        .settings-box {
+            background: #fff;
+            padding: 30px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+        }
+
+        .settings-box label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .settings-box input,
+        .settings-box textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .settings-box .profile-picture {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .profile-picture img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+
+        .profile-picture button {
+            margin-right: 10px;
+            background: #5e3bee;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .update-btn {
+            margin-top: 20px;
+            background: #5e3bee;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Styles for flash messages */
+        .flashes {
+            list-style: none;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .flashes li {
+            margin-bottom: 5px;
+            padding: 0;
+        }
+
+        .flashes .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+        }
+
+        .flashes .danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+        }
+
+        .flashes .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <div class="sidebar">
+        <h2>deep creationz</h2>
+        <ul>
+            <li>Home</li>
+            <li>Popular Blogs</li>
+            <li>Your Activity</li>
+            <li>Saved Blogs</li>
+            <li class="active">Settings</li>
+            <li>Logout</li>
+        </ul>
+    </div>
+    <div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
+        style="min-height: 600px; background-image: url(https://raw.githubusercontent.com/creativetimofficial/argon-dashboard/gh-pages/assets-old/img/theme/profile-cover.jpg); background-size: cover; background-position: center top;">
+        <div class="main">
+            <div class="profile-header">
+                <div>
+                    <h2>Account Settings</h2>
+                </div>
+                <div>
+                    <p>Welcome <strong>{{account[1]}} {{account[2]}}</strong></p>
+                </div>
+            </div>
+
+            <!-- Flash messages will appear here -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% endwith %}
+
+            <div class="tabs">
+                <div class="tab">Account Settings</div>
+                <div>Login & Security</div>
+                <div>Notification Settings</div>
+                <div>Interface</div>
+                <div>Additional Settings</div>
+            </div>
+            <div class="settings-box">
+                <label>Your Profile Picture</label>
+                <div class="profile-picture">
+                    <img src="https://demos.creative-tim.com/argon-dashboard/assets-old/img/theme/team-4.jpg"
+                        alt="Profile">
+                    <button>Upload New</button>
+                    <button style="background: #ccc; color: #000;">Remove Profile Picture</button>
+                </div>
+                <!-- <form action="/more_setting" method="POST"> -->
+
+                <form action="/update_password/{{account[0]}}" method="POST">
+
+                    <label for="Password">Password</label>
+                    <input type="password" id="Password" name="Password" placeholder="Enter your Password" required>
+
+                    <label for="new_password">New password</label>
+                    <input type="password" id="new_password" name="new_password" placeholder="Enter your New password"
+                        required>
+
+                    <label for="confirm_password">Confirm New password</label>
+                    <input type="password" id="confirm_password" name="confirm_password"
+                        placeholder="Enter your Confirm New password" required>
+
+                    <button type="submit" class="update-btn">Update Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
