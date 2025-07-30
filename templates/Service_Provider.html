@@ -34,7 +34,8 @@
         .signup-container input[type="Email"],
         .signup-container input[type="Password"],
         .signup-container input[type="date"],
-        .signup-container input[type="tel"]{
+        .signup-container input[type="tel"],
+        .signup-container input[type="decimal"]{
             width: 100%;
             padding: 10px;
             margin: 10px 0 20px 0;
@@ -103,6 +104,9 @@
 
             <label for="Category">Category</label>
             <input type="text" id="Category" name="Category" placeholder="Enter your Category" required>
+
+            <label for="Base_Price">Base Price</label>
+            <input type="decimal" id="Base_Price" name="Base_Price" placeholder="Enter your Base Price" required>
 
             <input type="submit" value="Sign Up">
 

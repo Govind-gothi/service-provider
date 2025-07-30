@@ -97,7 +97,7 @@ def login():
 def Service_Provider():
     msg = ''
     if request.method == 'POST':
-        if 'First_Name' in request.form and 'Last_Name' in request.form and 'Email' in request.form and 'Phone_Number' in request.form and 'City' in request.form and 'State' in request.form and 'Pincode' in request.form and 'Date_Of_Birth' in request.form and 'Password' in request.form and 'confirm_Password' in request.form and 'Category' in request.form:
+        if 'First_Name' in request.form and 'Last_Name' in request.form and 'Email' in request.form and 'Phone_Number' in request.form and 'City' in request.form and 'State' in request.form and 'Pincode' in request.form and 'Date_Of_Birth' in request.form and 'Password' in request.form and 'confirm_Password' in request.form and 'Category' in request.form and 'Base_Price' in request.form:
 
             First_Name = request.form['First_Name']
             Last_Name = request.form['Last_Name']
@@ -110,6 +110,7 @@ def Service_Provider():
             Password = request.form['Password']    
             confirm_Password = request.form['confirm_Password']
             Category = request.form['Category']    
+            Base_Price = request.form['Base_Price']
 
             if Password != confirm_Password:
                 msg = "Passwords do not match!"
@@ -140,8 +141,8 @@ def Service_Provider():
                 msg = 'Please fill out the form!'
                 return render_template('Service_Provider.html', msg=msg)
             else:
-                sql = "INSERT INTO Service_Provider (First_Name, Last_Name, Email, Phone_Number,Date_Of_Birth,City,State, Pincode, Password,Category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s)"
-                val = [(First_Name, Last_Name, Email, Phone_Number, Date_Of_Birth,City, State, Pincode, Password, Category)]
+                sql = "INSERT INTO Service_Provider (First_Name, Last_Name, Email, Phone_Number,Date_Of_Birth,City,State, Pincode, Password,Category, Base_Price) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)"
+                val = [(First_Name, Last_Name, Email, Phone_Number, Date_Of_Birth,City, State, Pincode, Password, Category, Base_Price)]
                 mycursor.executemany(sql, val)
                 mydb.commit()
                 msg = 'You have successfully registered!'
@@ -308,6 +309,11 @@ def update_password(CustomerID):
     return redirect(url_for('update_password', CustomerID=CustomerID))
 
 
+@app.route('/hire', methods=['GET','POST'])
+def hire():
+    if request.method == "GET":
+        # return "thsi si a hire api"
+        return render_template('hire.html')
 
 
 
