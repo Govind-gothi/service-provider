@@ -60,16 +60,32 @@
         label {
             font-weight: bold;
         }
+
+                    .warning_msg {
+            background-color: #f8d7da;
+            margin-bottom: 6px;
+            color: #721c24;
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            border-color: #f5c6cb;
+        }
+
     </style>
 </head>
 
 <body>
 
     <div class="signup-container">
-        <h2>Signup</h2>
+        <h2>Customer Sign Up</h2>
 
         <form action="/signup" method="POST">
-            <div>{{ msg }}</div>
+            <!-- <div>{{ msg }}</div> -->
+            {% if msg: %}
+            <div class =warning_msg >{{ msg }}</div>
+            {% endif %}
             <label for="First_Name">First_Name</label>
             <input type="text" id="First_Name" name="First_Name" placeholder="Enter your First Name" required>
 

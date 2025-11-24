@@ -151,11 +151,11 @@
       <p>Amount</p>
       <h2>₹{{ res.Base_Price }}</h2>
       <form action="/hire" method="GET">
+        <input type="hidden" name="provider_id" value="{{ res.ProviderID }}">
         <button class="temp"><span>Hire</span></button>
       </form>
     </div>
     {% endfor %}
   </div>
-
 </body>
 </html>

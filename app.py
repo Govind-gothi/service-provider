@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request,url_for,redirect,flash
 import mysql.connector
 import re
+from datetime import datetime, time
 
 app = Flask(__name__)
 app.secret_key = ' '
@@ -65,32 +66,31 @@ def signup():
 def home():
     return render_template('index.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    msg = ''
-    account = None
-    if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
-        Email = request.form['email']
-        Password = request.form['password']
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     msg = None
+#     account = None
+#     if request.method=='GET':
+#         return render_template('login.html',msg=msg)
+#     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
+#         Email = request.form['email']
+#         Password = request.form['password']
 
-        mydb = mysql.connector.connect(
-            host="127.0.0.1",
-            port="3306",
-            user="root",
-            password="54321",
-            database="user_db"
-        )
-        mycursor = mydb.cursor()
-        mycursor.execute('SELECT * FROM customer WHERE Email = %s AND Password = %s', (Email, Password))
-        
-        account = mycursor.fetchone()
-    if account:
-        msg='Logged in successfully!'
-        return render_template('index.html')
-    else:
-        msg = 'Incorrect username/password!' 
-        return render_template('login.html', msg=msg)     
-    
+#         mydb = mysql.connector.connect(
+#             host="127.0.0.1",
+#             port="3306",
+#             user="root",
+#             password="54321",
+#             database="user_db"
+#         )
+#         mycursor = mydb.cursor()
+#         mycursor.execute('SELECT * FROM customer WHERE Email = %s AND Password = %s', (Email, Password))
+#         account = mycursor.fetchone()
+#     if account:
+#         return render_template('customer_profile.html',account=account)
+#     else:
+#         msg = 'Incorrect username/password!' 
+#         return render_template('login.html', msg=msg)     
 
     
 @app.route('/Service_Provider', methods=['GET', 'POST'])
@@ -124,7 +124,7 @@ def Service_Provider():
             database="user_db"
             )
             mycursor = mydb.cursor()
-            mycursor.execute('SELECT * FROM Service_Provider WHERE First_Name = %s', (First_Name,))
+            mycursor.execute('SELECT * FROM Service_Provider WHERE Email = %s', (Email,))
             account = mycursor.fetchone()
 
             if account:
@@ -133,7 +133,7 @@ def Service_Provider():
             elif not re.match(r'[^@]+@[^@]+\.[^@]+', Email):
                 msg = 'Invalid email address!'
                 return render_template('Service_Provider.html', msg=msg)
-            elif not re.match(r'[A-Za-z0-9]+', First_Name):
+            elif not re.match(r'[A-Za-z0-9]+', Email):
                 msg = 'Username must contain only letters and numbers!'
                 return render_template('Service_Provider.html', msg=msg)
 
@@ -166,7 +166,6 @@ def services():
             )
             mycursor = mydb.cursor(dictionary=True)
             mycursor.execute('SELECT * FROM Service_Provider WHERE Category = %s', (Category,))
-
             result = mycursor.fetchall()
         return render_template('services.html',results=result)
     
@@ -177,7 +176,6 @@ def service_provider_login():
     msg = None
     account = None
     if request.method == 'GET':
-        # return render_template('service_provider_profile.html')
         return render_template('service_provider_login.html', msg=msg) 
     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
         Email = request.form['email']
@@ -200,10 +198,38 @@ def service_provider_login():
         return render_template('service_provider_login.html', msg=msg)     
     
 
-@app.route('/update_profile/<int:CustomerID>', methods=['GET','POST'])
-def update_profile(CustomerID):
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    msg = None
+    account = None
+    if request.method=='GET':
+        return render_template('login.html',msg=msg)
+    if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
+        Email = request.form['email']
+        Password = request.form['password']
+
+        mydb = mysql.connector.connect(
+            host="127.0.0.1",
+            port="3306",
+            user="root",
+            password="54321",
+            database="user_db"
+        )
+        mycursor = mydb.cursor()
+        mycursor.execute('SELECT * FROM customer WHERE Email = %s AND Password = %s', (Email, Password))
+        account = mycursor.fetchone()
+    if account:
+        return render_template('customar_profile.html',account=account)
+    else:
+        msg = 'Incorrect username/password!' 
+        return render_template('login.html', msg=msg)  
+    
+
+@app.route('/update_profile/<int:ProviderID>', methods=['GET','POST'])
+def update_profile(ProviderID):
     if request.method == "GET":
-        account = get_data_from_db(CustomerID=CustomerID)
+        account = get_data_from_db(ProviderID=ProviderID)
         return render_template('service_provider_profile.html', account=account)
 
     mydb = mysql.connector.connect(
@@ -233,19 +259,19 @@ def update_profile(CustomerID):
                 UPDATE service_provider SET 
                     First_Name=%s, Last_Name=%s, Email=%s, Phone_Number=%s,
                     Date_Of_Birth=%s, City=%s, State=%s, Pincode=%s,Category=%s
-                WHERE CustomerID=%s
+                WHERE ProviderID=%s
             """,
             (
                 First_Name, Last_Name, Email, Phone_Number, Date_Of_Birth,
-                City, State, Pincode, Category, CustomerID
+                City, State, Pincode, Category, ProviderID
             ))
             mydb.commit()
             mycursor.close()
-            return redirect(url_for('update_profile', CustomerID=CustomerID))
-        return redirect(url_for('update_profile', CustomerID=CustomerID))
+            return redirect(url_for('update_profile', ProviderID=ProviderID))
+        return redirect(url_for('update_profile', ProviderID=ProviderID))
 
 def get_data_from_db(**kwargs):
-    CustomerID = kwargs.get("CustomerID")
+    ProviderID = kwargs.get("ProviderID")
     mydb = mysql.connector.connect(
         host="127.0.0.1",
         port="3306",
@@ -254,18 +280,17 @@ def get_data_from_db(**kwargs):
         database="user_db"
     )
     mycursor = mydb.cursor()
-    mycursor.execute('SELECT * FROM Service_Provider WHERE CustomerID = %s', (CustomerID,))
+    mycursor.execute('SELECT * FROM Service_Provider WHERE ProviderID = %s', (ProviderID,))
     response = mycursor.fetchone()
     mycursor.close()
     return response
 
 
-@app.route('/update_password/<int:CustomerID>', methods=['GET', 'POST'])
-def update_password(CustomerID):
-    # Handle GET request: Display the form
+@app.route('/update_password/<int:ProviderID>', methods=['GET', 'POST'])
+def update_password(ProviderID):
     if request.method == "GET":
         # Get user data from DB to pre-fill or display on the form
-        account = get_data_from_db(CustomerID=CustomerID)
+        account = get_data_from_db(ProviderID=ProviderID)
         return render_template('more_setting.html', account=account)
 
     # Handle POST request: Process the form submission
@@ -288,11 +313,11 @@ def update_password(CustomerID):
                 try:
                     mycursor = mydb.cursor()
                     # Execute the update query
-                    mycursor.execute("UPDATE service_provider SET Password=%s WHERE CustomerID=%s", (new_password, CustomerID))
+                    mycursor.execute("UPDATE service_provider SET Password=%s WHERE ProviderID=%s", (new_password, ProviderID))
                     mydb.commit() 
                     mycursor.close()
                     flash('Password updated successfully!', 'success')
-                    print(f"Password for CustomerID {CustomerID} updated successfully.")
+                    print(f"Password for ProviderID {ProviderID} updated successfully.")
                 except mysql.connector.Error as err:
                     # Handle database errors
                     print(f"Error: {err}")
@@ -305,17 +330,96 @@ def update_password(CustomerID):
                 print("New password and confirm password do not match.")
                 flash('New password and confirm password are not same!', 'danger')
 
-        return redirect(url_for('update_password', CustomerID=CustomerID))
-    return redirect(url_for('update_password', CustomerID=CustomerID))
+        return redirect(url_for('update_password', ProviderID=ProviderID))
+    return redirect(url_for('update_password', ProviderID=ProviderID))
 
+def td_to_time(td):
+    total = int(td.total_seconds())
+    h = total // 3600
+    m = (total % 3600) // 60
+    h %= 24  # wrap around for times > 24 hours
+    return time(h, m)
 
-@app.route('/hire', methods=['GET','POST'])
-def hire():
-    if request.method == "GET":
-        # return "thsi si a hire api"
-        return render_template('hire.html')
+def time_overlap(start1, end1, start2, end2):
+    return max(start1, start2) < min(end1, end2)
+
+@app.route("/hire", methods=["GET", "POST"])
+def hire():    
+    if request.method == "POST":
+        if 'name' in request.form and 'date' in request.form and 'start_time' in request.form and 'end_time' in request.form and 'address' in request.form : 
+            name = request.form["name"]
+            date = request.form["date"]
+            start_time = request.form["start_time"]
+            end_time = request.form["end_time"]
+
+            
+            address = request.form["address"]
+            provider_id = request.form["provider_id"]
+            mydb = mysql.connector.connect(
+                host="127.0.0.1",
+                port="3306",
+                user="root",
+                password="54321",
+                database="user_db"
+                )
+            mycursor = mydb.cursor()
+            hired_query = "SELECT * FROM hire WHERE provider_id = %s"
+            values = (provider_id,)
+            mycursor.execute(hired_query,values)
+            result = mycursor.fetchall()
+            
+            form_date = datetime.strptime(date, "%Y-%m-%d").date()
+            form_start = datetime.strptime(start_time, "%H:%M").time()
+            form_end = datetime.strptime(end_time, "%H:%M").time()
+            
+            available_slots = []
+            not_available = False
+
+            for entry in result:
+                entry_date = entry[2]
+                start_td = entry[3]
+                end_td = entry[4]
+
+                if entry_date != form_date:
+                    continue  # skip other dates
+            
+
+                prov_start = td_to_time(start_td)
+                prov_end = td_to_time(end_td)
+
+                if time_overlap(form_start, form_end, prov_start, prov_end):
+                    not_available = True
+                else:
+                    available_slots.append((prov_start, prov_end))
+
+            if not_available:
+                flash("❌ Requested slot is NOT available.", "error")
+                if available_slots:
+                    flash("❌ Other available slots on that date:", "error")
+                    for s, e in available_slots:
+                        print(s.strftime("%H:%M"), "-", e.strftime("%H:%M"))
+                else:
+                     flash("❌ No other slots available on that date.", "error")
+            else:                
+                flash("✅ Booking Successful!")
+                sql = "INSERT INTO hire (provider_id,name, date, start_time, end_time, address) VALUES (%s,%s, %s, %s, %s, %s)"
+                values = (provider_id,name, date, start_time, end_time, address)
+                mycursor.execute(sql, values)
+                mydb.commit()
+                    
+
+            
+
+            flash("✅ Booking Successful!")
+            return redirect(url_for("hire"))
+
+            # return redirect("/hire")
+    provider_id = request.args.get("provider_id")
+    return render_template("hire.html",provider_id= provider_id)
 
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+

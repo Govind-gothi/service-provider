@@ -61,6 +61,19 @@
         label {
             font-weight: bold;
         }
+
+            .warning_msg {
+            background-color: #f8d7da;
+            margin-bottom: 6px;
+            color: #721c24;
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            border-color: #f5c6cb;
+        }
+
     </style>
 </head>
 
@@ -68,9 +81,11 @@
 
     <div class="signup-container">
         <h2>Service Provider Signup</h2>
-
         <form action="/Service_Provider" method="POST">
-            <div>{{ msg }}</div>
+            <!-- <div>{{ msg }}</div> -->
+            {% if msg: %}
+            <div class =warning_msg >{{ msg }}</div>
+            {% endif %}
             <label for="First_Name">First Name</label>
             <input type="text" id="First_Name" name="First_Name" placeholder="Enter your First Name" required>
 
@@ -90,8 +105,7 @@
             <input type="text" id="State" name="State" placeholder="Enter your State" required>
 
             <label for="Pincode">Pincode</label>
-            <input type="text" id="Pincode" name="Pincode" placeholder="Enter your Pincode" pattern="[0-9]{6}"
-                maxlength="6" required>
+            <input type="text" id="Pincode" name="Pincode" placeholder="Enter your Pincode" pattern="[0-9]{6}"maxlength="6" required>
 
             <label for="Date_Of_Birth">Date Of Birth</label>
             <input type="date" id="Date_Of_Birth" name="Date_Of_Birth" placeholder="Enter Date Of Birth" required>
