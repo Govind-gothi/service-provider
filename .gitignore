@@ -25,3 +25,5 @@ Thumbs.db
 
 # Logs
 *.log
+
+gunicorn==23.0.0
