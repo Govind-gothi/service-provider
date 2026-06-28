@@ -1,161 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Top Center Search Bar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * {
-      box-sizing: border-box;
-    }
 
-    body, html {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-    }
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .page-container { font-family: sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .page-title { margin: 0 0 20px 0; color: #222; font-size: 1.8rem; }
+  
+  .filter-links { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+  .btn { padding: 10px 20px; border-radius: 6px; font-weight: bold; text-decoration: none; text-align: center; cursor: pointer; transition: 0.2s; font-size: 0.95rem; border: none; }
+  .btn-outline-primary { color: #007bff; border: 1px solid #007bff; background: transparent; }
+  .btn-outline-primary:hover { background: #007bff; color: white; }
+  .btn-outline-warning { color: #d39e00; border: 1px solid #ffc107; background: transparent; }
+  .btn-outline-warning:hover { background: #ffc107; color: #222; }
+  
+  .search-form { display: flex; gap: 10px; margin-bottom: 30px; }
+  .search-input { flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+  .btn-search { background: #007bff; color: white; width: 120px; }
+  .btn-search:hover { background: #0056b3; }
+  
+  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .provider-card { background: white; border: 1px solid #eaeaea; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: transform 0.2s; }
+  .provider-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.08); }
+  
+  .card-title { margin: 0 0 10px 0; font-size: 1.25rem; color: #222; }
+  .card-info { margin: 5px 0; color: #555; font-size: 0.95rem; }
+  .rating-text { color: #d39e00; font-weight: bold; margin: 10px 0; }
+  .text-muted { color: #888; font-size: 0.85rem; font-weight: normal; }
+  
+  .badge { display: inline-block; padding: 5px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; margin-bottom: 15px; }
+  .bg-success { background: #d4edda; color: #155724; }
+  .bg-warning { background: #fff3cd; color: #856404; }
+  .bg-secondary { background: #e2e3e5; color: #383d41; }
+  
+  .card-footer { display: flex; gap: 10px; margin-top: auto; }
+  .btn-book { background: #007bff; color: white; flex-grow: 1; }
+  .btn-book:hover { background: #0056b3; }
+  .btn-review { border: 1px solid #ccc; color: #555; background: #fff; }
+  .btn-review:hover { background: #f8f9fa; }
+  
+  .info-alert { background: #e7f3fe; color: #004085; padding: 15px; border-radius: 6px; text-align: center; }
+</style>
 
-    /* Search Bar at Top Center */
-    .search-wrapper {
-      display: flex;
-      justify-content: center;
-      padding: 30px 20px 0 20px;
-    }
+<div class="page-container">
+  <h2 class="page-title">Browse Services</h2>
 
-    .search-form {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-      max-width: 800px;
-    }
-
-    .search-input {
-      flex: 1;
-      padding: 14px 20px;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      outline: none;
-    }
-
-    .search-input:focus {
-      border-color: #0d6efd;
-    }
-
-    .search-button {
-      padding: 8px 16px;
-      font-size: 1rem;
-      color: #0d6efd;
-      background: transparent;
-      border: 1px solid #0d6efd;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .search-button:hover {
-      background: #0d6efd;
-      color: white;
-    }
-
-    /* Card Layout */
-    .flex-container {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-      padding: 20px;
-    }
-
-    .card {
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-      max-width: 300px;
-      text-align: center;
-      font-family: Arial, sans-serif;
-      background-color: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      padding-bottom: 20px;
-    }
-
-    .title {
-      color: grey;
-      font-size: 18px;
-      margin: 10px 0;
-    }
-
-    /* Fancy Button Style */
-    .temp {
-      align-items: center;
-      background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
-      border: 0;
-      border-radius: 8px;
-      box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
-      color: #ffffff;
-      display: flex;
-      font-size: 18px;
-      justify-content: center;
-      line-height: 1em;
-      max-width: 100%;
-      min-width: 140px;
-      padding: 3px;
-      text-decoration: none;
-      user-select: none;
-      touch-action: manipulation;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin: 10px auto 0 auto;
-    }
-
-    .temp:active,
-    .temp:hover {
-      outline: 0;
-    }
-
-    .temp span {
-      background-color: rgb(5, 6, 45);
-      padding: 16px 24px;
-      border-radius: 6px;
-      width: 100%;
-      height: 100%;
-      transition: 300ms;
-    }
-
-    .temp:hover span {
-      background: none;
-    }
-
-    .temp:active {
-      transform: scale(0.95);
-    }
-  </style>
-</head>
-<body>
-  <!-- Search Bar -->
-  <div class="search-wrapper">
-    <form class="search-form" action="/services" method="POST"> 
-      <input class="search-input" type="text" name="Category" placeholder="Search for services and packages" required>
-      <button type="submit" class="search-button">Search</button>
-    </form>
+  <div class="filter-links">
+    <a href="{{ url_for('services_nearby') }}?category={{ category }}" class="btn btn-outline-primary">📍 Nearby Providers</a>
+    <a href="{{ url_for('top_rated_providers') }}{% if category %}?category={{ category }}{% endif %}" class="btn btn-outline-warning">⭐ Top Rated</a>
   </div>
 
-  <!-- Cards Section -->
-  <div class="flex-container">
-    {% for res in results %}
-    <div class="card">
-      <img src="https://picsum.photos/seed/picsum/450/300" alt="Image" style="width:100%">
-      <h1>{{ res.First_Name }}</h1>
-      <p class="title">{{ res.Category.upper() }}</p>
-      <p>Amount</p>
-      <h2>₹{{ res.Base_Price }}</h2>
-      <form action="/hire" method="GET">
-        <input type="hidden" name="provider_id" value="{{ res.ProviderID }}">
-        <button class="temp"><span>Hire</span></button>
-      </form>
+  <form method="POST" action="{{ url_for('services') }}" class="search-form">
+    <input type="text" name="Category" class="search-input" placeholder="Search by service (e.g. Plumber, Electrician...)" value="{{ category }}">
+    <button type="submit" class="btn btn-search">Search</button>
+  </form>
+
+  {% if results %}
+    <p style="color: #666; margin-bottom:15px;">{{ results|length }} provider(s) found for "<strong>{{ category }}</strong>"</p>
+    
+    <div class="grid-container">
+      {% for p in results %}
+      <div class="provider-card">
+        <h5 class="card-title">{{ p.First_Name }} {{ p.Last_Name }}</h5>
+        <p class="card-info"><strong>Service:</strong> {{ p.Category }}</p>
+        <p class="card-info"><strong>Price:</strong> ₹{{ p.Base_Price }}</p>
+        <p class="card-info"><strong>Location:</strong> {{ p.City }}, {{ p.State }}</p>
+
+        {% if p.get('Avg_Rating') %}
+          <div class="rating-text">⭐ {{ p.Avg_Rating }}/5 <span class="text-muted">({{ p.Review_Count }} reviews)</span></div>
+        {% else %}
+          <div class="text-muted" style="margin: 10px 0;">No reviews yet</div>
+        {% endif %}
+
+        <div>
+          <span class="badge {% if p.Availability_Status == 'Available' %}bg-success{% elif p.Availability_Status == 'Busy' %}bg-warning{% else %}bg-secondary{% endif %}">
+            {{ p.Availability_Status }}
+          </span>
+        </div>
+
+        <div class="card-footer">
+          <a href="{{ url_for('hire', provider_id=p.ProviderID) }}" class="btn btn-book">Book Now</a>
+          <a href="{{ url_for('provider_reviews', provider_id=p.ProviderID) }}" class="btn btn-review">Reviews</a>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
-  </div>
-</body>
-</html>
+
+  {% elif category %}
+    <div class="info-alert">No providers found for "<strong>{{ category }}</strong>". Try a different search.</div>
+  {% else %}
+    <div style="text-align:center; padding:50px; color:#888;">Enter a service above to search for providers.</div>
+  {% endif %}
+</div>
+{% endblock %}

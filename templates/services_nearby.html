@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .page-title { font-family: sans-serif; color: #222; margin-bottom: 20px; }
+  .info-banner { background-color: #e7f3fe; border-left: 5px solid #2196F3; padding: 15px; margin-bottom: 20px; font-family: sans-serif; color: #0c5460; border-radius: 4px; }
+  
+  .filter-form { display: flex; flex-wrap: wrap; gap: 12px; background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #eee; }
+  .filter-input, .filter-select { flex: 1; min-width: 150px; padding: 10px 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+  .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; text-decoration: none; text-align: center; transition: background 0.2s; }
+  .btn-primary { background-color: #007bff; color: white; }
+  .btn-primary:hover { background-color: #0056b3; }
+  .btn-outline { background-color: transparent; border: 1px solid #6c757d; color: #495057; }
+  .btn-outline:hover { background-color: #e9ecef; }
+
+  .results-text { color: #666; font-family: sans-serif; margin-bottom: 15px; }
+  
+  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; font-family: sans-serif; }
+  .provider-card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
+  .provider-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+  .provider-card h3 { margin: 0 0 10px 0; font-size: 1.25rem; color: #333; }
+  .provider-card p { margin: 5px 0; color: #555; font-size: 0.95rem; }
+  .text-success { color: #28a745; font-weight: bold; }
+  .text-muted { color: #888; font-size: 0.85rem; }
+  
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; margin-top: 10px; }
+  .badge-available { background-color: #d4edda; color: #155724; }
+  .badge-unavailable { background-color: #fff3cd; color: #856404; }
+  
+  .card-actions { display: flex; gap: 10px; margin-top: auto; padding-top: 20px; }
+  .card-actions .btn { flex: 1; }
+</style>
+
+<h2 class="page-title">Find Nearby {{ category }} Providers</h2>
+
+{% if not has_location %}
+<div class="info-banner">
+  <strong>Note:</strong> Location detection requires JavaScript. Providers shown are based on broad search.
+</div>
+{% endif %}
+
+<!-- Filter Form -->
+<form method="GET" action="{{ url_for('services_nearby') }}" class="filter-form">
+  <input type="text" name="category" class="filter-input" placeholder="Category" value="{{ category }}" required>
+  <input type="text" name="city" class="filter-input" placeholder="City (optional)" value="{{ city }}">
+  <input type="text" name="state" class="filter-input" placeholder="State (optional)" value="{{ state }}">
+  
+  {% if has_location %}
+  <select name="radius_km" class="filter-select">
+    {% for r in [10, 25, 50, 100] %}
+    <option value="{{ r }}" {% if radius_km == r %}selected{% endif %}>Within {{ r }} km</option>
+    {% endfor %}
+  </select>
+  {% endif %}
+  
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<!-- Results -->
+{% if results %}
+  <p class="results-text">{{ results|length }} provider(s) found</p>
+  <div class="grid-container">
+  {% for p in results %}
+    <div class="provider-card">
+      <h3>{{ p.First_Name }} {{ p.Last_Name }}</h3>
+      <p><strong>Category:</strong> {{ p.Category }}</p>
+      <p><strong>Price:</strong> ₹{{ p.Base_Price }}</p>
+      <p><strong>Location:</strong> {{ p.City }}, {{ p.State }}</p>
+      
+      {% if p.distance_km is not none %}
+        <p class="text-success">Distance: {{ p.distance_km }} km away</p>
+      {% endif %}
+      
+      {% if p.Avg_Rating %}
+        <p>⭐ {{ p.Avg_Rating }}/5 ({{ p.Review_Count }} reviews)</p>
+      {% else %}
+        <p class="text-muted">No reviews yet</p>
+      {% endif %}
+      
+      <div>
+        <span class="badge {% if p.Availability_Status == 'Available' %}badge-available{% else %}badge-unavailable{% endif %}">
+          {{ p.Availability_Status }}
+        </span>
+      </div>
+      
+      <div class="card-actions">
+        <a href="{{ url_for('hire', provider_id=p.ProviderID) }}" class="btn btn-primary">Book Now</a>
+        <a href="{{ url_for('provider_reviews', provider_id=p.ProviderID) }}" class="btn btn-outline">Reviews</a>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+{% else %}
+  <p class="results-text">No providers found. Try widening your search.</p>
+{% endif %}
+{% endblock %}

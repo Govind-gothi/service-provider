@@ -2,36 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Booking Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Service</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background: #f0f2f5;
             margin: 0;
+            padding: 30px 20px;
         }
+
+        .page-header {
+            max-width: 480px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header a { color: #0077b6; text-decoration: none; font-weight: 600; }
 
         .container {
             background: #ffffff;
             padding: 30px 25px;
             border-radius: 12px;
             width: 100%;
-            max-width: 400px;
+            max-width: 480px;
+            margin: 0 auto;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
+        .provider-info {
+            background: #e9f3fb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
         }
 
-        label {
-            margin-bottom: 6px;
-            font-weight: bold;
-        }
+        .provider-info h2 { margin: 0 0 8px; color: #0077b6; font-size: 20px; }
+        .provider-info p { margin: 4px 0; color: #555; font-size: 14px; }
+
+        form { display: flex; flex-direction: column; }
+
+        label { margin-bottom: 6px; font-weight: bold; font-size: 14px; }
 
         input[type="text"],
         input[type="date"],
@@ -45,13 +58,31 @@
             box-sizing: border-box;
         }
 
+        .time-slots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .slot-btn {
+            padding: 8px 12px;
+            border: 1px solid #0077b6;
+            background: white;
+            color: #0077b6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .slot-btn:hover { background: #0077b6; color: white; }
+
         .cnf_booking {
             align-items: center;
             background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
             border: 0;
             border-radius: 8px;
             box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
-            box-sizing: border-box;
             color: #ffffff;
             display: flex;
             font-size: 18px;
@@ -60,19 +91,9 @@
             max-width: 100%;
             min-width: 140px;
             padding: 3px;
-            text-decoration: none;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            white-space: nowrap;
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 10px;
-        }
-
-        .cnf_booking:active,
-        .cnf_booking:hover {
-            outline: 0;
         }
 
         .cnf_booking span {
@@ -80,48 +101,58 @@
             padding: 16px 24px;
             border-radius: 6px;
             width: 100%;
-            height: 100%;
+            text-align: center;
             transition: 300ms;
         }
 
-        .cnf_booking:hover span {
-            background: none;
-        }
+        .cnf_booking:hover span { background: none; }
 
-        .cnf_booking:active {
-            transform: scale(0.9);
+        .flash {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
         }
-
-      .success-bar {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #4CAF50;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-        animation: fadeInOut 3s ease-in-out;
-        z-index: 999;
-        }
+        .flash.success { background: #d4edda; color: #155724; }
+        .flash.error { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
 
+    <div class="page-header">
+        <a href="/services?category={{ provider.Category }}">← Back to providers</a>
+        <a href="/bookings">My Bookings</a>
+    </div>
+
     <div class="container">
-           {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="success-bar">
-          {{ messages[0] }}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endwith %}
+
+        <div class="provider-info">
+            <h2>{{ provider.First_Name }} {{ provider.Last_Name }}</h2>
+            <p><strong>Service:</strong> {{ provider.Category }}</p>
+            <p><strong>Price:</strong> ₹{{ provider.Base_Price }}</p>
+            <p><strong>Location:</strong> {{ provider.City }}, {{ provider.State }}</p>
+            <p><strong>Status:</strong> {{ provider.Availability_Status or 'Available' }}</p>
         </div>
-      {% endif %}
-    {% endwith %}
+
         <form action="/hire" method="POST">
             <label for="name">Your Name:</label>
-            <input type="text" id="name" name="name" placeholder="Enter your Name" required>
+            <input type="text" id="name" name="name" value="{{ default_name }}" required>
 
             <label for="date">Date:</label>
             <input type="date" id="date" name="date" required>
+
+            <label>Quick time slots (2 hours):</label>
+            <div class="time-slots">
+                <button type="button" class="slot-btn" onclick="setSlot('09:00','11:00')">9 AM – 11 AM</button>
+                <button type="button" class="slot-btn" onclick="setSlot('11:00','13:00')">11 AM – 1 PM</button>
+                <button type="button" class="slot-btn" onclick="setSlot('14:00','16:00')">2 PM – 4 PM</button>
+                <button type="button" class="slot-btn" onclick="setSlot('16:00','18:00')">4 PM – 6 PM</button>
+            </div>
 
             <label for="start_time">Start Time:</label>
             <input type="time" id="start_time" name="start_time" required>
@@ -130,12 +161,20 @@
             <input type="time" id="end_time" name="end_time" required>
 
             <label for="address">Address:</label>
-            <input type="text" id="address" name="address" placeholder="Enter your location" required>
-            <input type="hidden" name="provider_id" value="{{ provider_id }}" required>
+            <input type="text" id="address" name="address" value="{{ default_address }}" placeholder="Enter your location" required>
+
+            <input type="hidden" name="provider_id" value="{{ provider_id }}">
 
             <button class="cnf_booking" type="submit"><span>Confirm Booking</span></button>
         </form>
     </div>
+
+    <script>
+        function setSlot(start, end) {
+            document.getElementById('start_time').value = start;
+            document.getElementById('end_time').value = end;
+        }
+        document.getElementById('date').min = new Date().toISOString().split('T')[0];
+    </script>
 </body>
 </html>
-

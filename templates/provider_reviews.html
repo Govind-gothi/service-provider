@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .profile-header { background: #fdfdfd; border: 1px solid #eaeaea; border-radius: 12px; padding: 30px; margin-bottom: 40px; font-family: sans-serif; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+  .profile-info h2 { margin: 0 0 5px 0; font-size: 2rem; color: #222; }
+  .profile-meta { color: #666; font-size: 1.1rem; margin-bottom: 15px; }
+  .profile-price { font-size: 1.2rem; color: #333; margin-bottom: 15px; }
+  
+  .rating-display { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; }
+  .stars { color: #ffc107; font-size: 1.5rem; letter-spacing: 2px; }
+  
+  .btn-book { background: #007bff; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 1.1rem; border: none; cursor: pointer; transition: 0.2s; }
+  .btn-book:hover { background: #0056b3; }
+
+  .reviews-title { font-family: sans-serif; color: #222; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 25px; }
+  
+  .review-card { background: white; border-left: 5px solid #ffc107; border-radius: 0 8px 8px 0; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); font-family: sans-serif; }
+  .review-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .reviewer-name { font-weight: bold; font-size: 1.1rem; color: #333; }
+  .review-date { color: #888; font-size: 0.9rem; }
+  .review-text { color: #444; line-height: 1.5; margin: 10px 0 0 0; }
+  .no-reviews { padding: 40px; text-align: center; color: #888; background: #f9f9f9; border-radius: 8px; font-family: sans-serif; }
+</style>
+
+<div class="profile-header">
+  <div class="profile-info">
+    <h2>{{ provider.First_Name }} {{ provider.Last_Name }}</h2>
+    <div class="profile-meta">{{ provider.Category }} • {{ provider.City }}, {{ provider.State }}</div>
+    <div class="profile-price"><strong>Base Price:</strong> ₹{{ provider.Base_Price }}</div>
+
+    {% if provider.Avg_Rating %}
+      <div class="rating-display">
+        <span class="stars">{{ '★' * provider.Avg_Rating|int }}{{ '☆' * (5 - provider.Avg_Rating|int) }}</span>
+        <strong>{{ provider.Avg_Rating }}/5</strong>
+        <span style="color: #888;">({{ provider.Review_Count }} reviews)</span>
+      </div>
+    {% else %}
+      <p style="color: #888; margin: 0;">No reviews yet.</p>
+    {% endif %}
+  </div>
+  
+  <div>
+    <a href="{{ url_for('hire', provider_id=provider_id) }}" class="btn-book">Book This Provider</a>
+  </div>
+</div>
+
+<h3 class="reviews-title">Customer Reviews</h3>
+
+{% for r in reviews %}
+<div class="review-card">
+  <div class="review-top">
+    <span class="reviewer-name">{{ r.customer_name }}</span>
+    <span class="review-date">{{ r.Created_At.strftime('%d %b %Y') if r.Created_At else '' }}</span>
+  </div>
+  <div class="stars" style="font-size: 1.2rem; margin-bottom: 5px;">
+    {{ '★' * r.Rating }}{{ '☆' * (5 - r.Rating) }}
+  </div>
+  {% if r.Review_Text %}
+    <p class="review-text">{{ r.Review_Text }}</p>
+  {% else %}
+    <p class="review-text" style="font-style: italic; color: #999;">No written review.</p>
+  {% endif %}
+</div>
+{% else %}
+<div class="no-reviews">
+  <p>Be the first to review this provider!</p>
+</div>
+{% endfor %}
+{% endblock %}

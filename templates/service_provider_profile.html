@@ -1,9 +1,3 @@
-<!-- <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"> -->
-
-<!-- <link rel="stylesheet" href="../static/service_provider_profile.css" /> -->
-<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='service_provider_profile.css') }}"> -->
-<!-- <link rel="stylesheet" href="{{ url_for('static', filename='service_provider_profile.css') }}"> -->
-<!-- <link rel="stylesheet" href="{{ url_for('static', filename='service_provider_profile.css') }}"> -->
 
 
 <style>
@@ -2123,9 +2117,6 @@
             <h1 class="display-2 text-white">{{account[1]}} {{account[2]}}</h1>
             <p class="text-white mt-0 mb-5">This is your profile page. You can see the progress you've made with your
               work and manage your assigned tasks</p>
-            <!-- <a href="#!" class="btn btn-info">Edit profile</a> -->
-            <!-- <button class="btn btn-info" type="submit">Edit profile</button> -->
-            <!-- </form> -->
           </div>
         </div>
       </div>
@@ -2146,12 +2137,6 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
-              <div class="d-flex justify-content-between">
-                <a href="#" class="btn btn-sm btn-info mr-4">Connect</a>
-                <a href="#" class="btn btn-sm btn-default float-right">Message</a>
-              </div>
-            </div> -->
             <div class="card-body pt-0 pt-md-4">
               <div class="row">
                 <div class="col">
@@ -2200,9 +2185,9 @@ We offer professional and verified service experts who deliver quick response an
                   <h3 class="mb-0">My account</h3>
                 </div>
                 <div class="col-4 text-right">
-                  <form action="/update_password/{{account[0]}}" method="GET">
+                  <a href="/provider/bookings" class="btn btn-sm btn-success">Bookings Dashboard</a>
+                  <form action="/update_password/{{account[0]}}" method="GET" style="display:inline;">
                     <button class="btn btn-sm btn-primary" type="submit">Update Password</button>
-                    <!-- <button class="btn btn-info" type="submit">Update</button> -->
                   </form>
                 </div>
               </div>
@@ -2309,11 +2294,6 @@ We offer professional and verified service experts who deliver quick response an
                   <!-- Description -->
                   <h6 class="heading-small text-muted mb-4">About me</h6>
                   <div class="pl-lg-4">
-                    <!-- <div class="form-group focused">
-                      <label>About Me</label>
-                      <textarea rows="4" class="form-control form-control-alternative"
-                        placeholder="A few words about you ...">A beautiful Dashboard for Bootstrap 4. It is Free and Open Source.</textarea>
-                    </div> -->
                     <button class="btn btn-info" type="submit">Update</button>
                   </div>
               </form>
@@ -2326,10 +2306,6 @@ We offer professional and verified service experts who deliver quick response an
   <footer class="footer">
     <div class="row align-items-center justify-content-xl-between">
       <div class="col-xl-6 m-auto text-center">
-        <!-- <div class="copyright">
-          <p>Made with <a href="https://www.creative-tim.com/product/argon-dashboard" target="_blank">Argon
-              Dashboard</a> by Creative Tim</p>
-        </div> -->
       </div>
     </div>
   </footer>

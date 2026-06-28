@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .header-section { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 30px; font-family: sans-serif; gap: 20px; }
+  .page-title { margin: 0; color: #222; }
+  
+  .filter-bar { display: flex; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
+  .filter-input { padding: 10px 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; width: 250px; }
+  .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; text-decoration: none; text-align: center; transition: 0.2s; }
+  .btn-primary { background-color: #007bff; color: white; }
+  .btn-primary:hover { background-color: #0056b3; }
+  .btn-clear { background-color: white; border: 1px solid #ccc; color: #555; }
+  .btn-clear:hover { background-color: #f1f1f1; }
+
+  .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; font-family: sans-serif; }
+  
+  .top-card { background: white; border: 2px solid #ffeeba; border-radius: 12px; padding: 25px; text-align: center; display: flex; flex-direction: column; transition: transform 0.3s, border-color 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+  .top-card:hover { transform: translateY(-5px); border-color: #ffc107; box-shadow: 0 8px 20px rgba(255, 193, 7, 0.15); }
+  
+  .top-card h3 { margin: 0 0 5px 0; color: #222; }
+  .category-tag { background: #333; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; display: inline-block; margin-bottom: 5px; }
+  .location-text { color: #777; font-size: 0.9rem; margin-bottom: 15px; }
+  .price-text { font-size: 1.3rem; font-weight: bold; color: #28a745; margin: 10px 0; }
+  
+  .rating-box { background: #fafafa; border: 1px solid #eee; border-radius: 8px; padding: 10px; margin: 15px 0; }
+  .stars { color: #ffc107; font-size: 1.5rem; letter-spacing: 2px; margin-bottom: 5px; }
+  .rating-numbers { color: #333; font-weight: bold; }
+  .rating-count { color: #888; font-weight: normal; font-size: 0.9rem; }
+  
+  .status { font-weight: bold; font-size: 0.9rem; padding: 5px 12px; border-radius: 12px; display: inline-block; margin-bottom: 20px; }
+  .status-Available { background: #d4edda; color: #155724; }
+  .status-Busy { background: #e2e3e5; color: #383d41; }
+  
+  .card-actions { display: flex; gap: 10px; margin-top: auto; }
+  .card-actions .btn { flex: 1; }
+  .btn-book { background: #ffc107; color: #333; }
+  .btn-book:hover { background: #e0a800; }
+  
+  .no-results { grid-column: 1 / -1; text-align: center; padding: 50px; background: #f9f9f9; border-radius: 8px; color: #777; }
+</style>
+
+<div class="header-section">
+  <h2 class="page-title">⭐ Top Rated Providers</h2>
+  
+  <form method="GET" class="filter-bar">
+    <input type="text" name="category" class="filter-input" placeholder="Filter by category" value="{{ category }}">
+    <button class="btn btn-primary">Filter</button>
+    {% if category %}
+      <a href="{{ url_for('top_rated_providers') }}" class="btn btn-clear">Clear</a>
+    {% endif %}
+  </form>
+</div>
+
+<div class="grid-container">
+  {% for p in providers %}
+  <div class="top-card">
+    <h3>{{ p.First_Name }} {{ p.Last_Name }}</h3>
+    <div>
+      <span class="category-tag">{{ p.Category }}</span>
+      <div class="location-text">{{ p.City }}, {{ p.State }}</div>
+    </div>
+    
+    <div class="price-text">₹{{ p.Base_Price }}</div>
+    
+    <div class="rating-box">
+      <div class="stars">{{ '★' * p.Avg_Rating|int }}{{ '☆' * (5 - p.Avg_Rating|int) }}</div>
+      <div class="rating-numbers">{{ p.Avg_Rating }}/5 <span class="rating-count">({{ p.Review_Count }} reviews)</span></div>
+    </div>
+    
+    <div>
+      <span class="status status-{{ p.Availability_Status }}">{{ p.Availability_Status }}</span>
+    </div>
+    
+    <div class="card-actions">
+      <a href="{{ url_for('hire', provider_id=p.ProviderID) }}" class="btn btn-book">Book</a>
+      <a href="{{ url_for('provider_reviews', provider_id=p.ProviderID) }}" class="btn btn-clear">Reviews</a>
+    </div>
+  </div>
+  {% else %}
+  <div class="no-results">
+    <h3>No highly rated providers found yet.</h3>
+    <p>Try adjusting your filters.</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

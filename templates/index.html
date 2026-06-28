@@ -219,18 +219,6 @@ nav ul li a:hover {
   margin: 0 15px 20px 15px;
 }
 
-/* .service-card a {
-  display: inline-block;
-  margin: 0 0 20px 15px;
-  background: #0077b6;
-  color: white;
-  padding: 8px 15px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 14px;
-  transition: 0.3s;
-} */
-
 .service-card a:hover {
   background: #005f8a;
 }
@@ -304,70 +292,74 @@ footer {
 </style>
 <body>
 
-  <!-- ===== HEADER ===== -->
   <header>
     <div class="logo">
       <h1>Service Provider</h1>
     </div>
 
-    <!-- <nav>
-      <ul>
-        <li><a href="#hero">Home</a></li>
-        <li><a href="#services">Services</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </nav> -->
-
-
-    <!-- Action Buttons -->
-
-     <div class="auth-buttons">
-      <a href="/login">
-        <button class="btn login">Customer Login</button>
-      </a>
-      <a href="/signup">
-        <button class="btn signup">Customer Sign Up</button>
-      </a>
-        <form action="/service_provider_login" method="GET">
-        <button class="btn login">Provider Login</button>
-      </form>
-      <a href="/Service_Provider">
-        <button class="btn signup">Provider Sign Up</button>
-      </a>
-     </div>
+    <div class="auth-buttons">
+      {% if session.get('role') == 'customer' %}
+        <a href="/bookings"><button class="btn login">My Bookings</button></a>
+        <a href="{{ url_for('services_nearby') }}?category="><button class="btn login">📍 Nearby</button></a>
+        <a href="{{ url_for('top_rated_providers') }}"><button class="btn login">⭐ Top Rated</button></a>
+        <a href="/logout"><button class="btn work">Logout</button></a>
+        
+      {% elif session.get('role') == 'provider' %}
+        <a href="/provider/bookings"><button class="btn login">Dashboard</button></a>
+        <a href="{{ url_for('provider_payments') }}"><button class="btn login">💰 Earnings</button></a>
+        <a href="/logout"><button class="btn work">Logout</button></a>
+        
+      {% else %}
+        <a href="/login"><button class="btn login">Customer Login</button></a>
+        <a href="/signup"><button class="btn signup">Customer Sign Up</button></a>
+        <form action="/service_provider_login" method="GET" style="display: inline;">
+          <button class="btn login">Provider Login</button>
+        </form>
+        <a href="/Service_Provider"><button class="btn signup">Provider Sign Up</button></a>
+      {% endif %}
+    </div>
 
   </header>
 
-  <!-- ===== HERO SECTION ===== -->
   <section class="hero" id="hero">
     <h2>Find Skilled Workers Quickly</h2>
     <p>Search for services you need and hire the best professionals instantly.</p>
 
-    <!-- Hero Search Bar -->
-<div class="search-bar">
-  <form class="search-bar" action="/services" method="POST">
-          <input type="text" name="Category" placeholder="Search for services and packages" required>
-          <button type="submit" class="search-button">Search</button>
-  </form>
-</div>
-  </section>
-
-  <!-- ===== SERVICES ===== -->
-  <section class="services" id="services">
-    <h2>Our Services</h2>
-    <div class="service-container">
-      <div class="service-card"><img src="https://www.goldmedalservice.com/wp-content/uploads/2022/06/Ceiling-Fan-Installation-Solutions-Technician-Image.jpg"><h3>Fan Repair</h3><p>Fast, reliable ceiling and table fan repair for homes and offices.</p><a href="#"></a></div>
-      <div class="service-card"><img src="https://sukwariya.com/wp-content/uploads/2022/09/air-conditioner-service-indoors-air-conditioner-cleaning-technician-he-opened-front-cover-took-out-f-1.jpg"><h3>AC Maintenance</h3><p>Keep cool with expert AC servicing and repair.</p><a href="#"></a></div>
-      <div class="service-card"><img src="https://www.healthyhomesutah.com/wp-content/uploads/Professional-House-Cleaning-Services-in-North-Ogden-Utah.jpg"><h3>Home Cleaning</h3><p>Deep cleaning for every corner of your home or apartment.</p><a href="#"></a></div>
-      <div class="service-card"><img src="https://tse3.mm.bing.net/th/id/OIP.Bi6J6dp-WWKCrNU_Ux9dFwHaEQ?pid=Api&P=0&h=180"><h3>Car Driver</h3><p>Trusted and professional drivers for short or long-term needs.</p><a href="#"></a></div>
-      <div class="service-card"><img src="https://www.cve.com/wp-content/uploads/2023/02/electrician-terms-to-know.jpg"><h3>Electrician</h3><p>Certified electricians for wiring, lighting, and repair services.</p><a href="#"></a></div>
-      <div class="service-card"><img src="https://clipart-library.com/newhp/kissclipart-cartoon-clip-art-construction-worker-solid-swingh-749701665307346b.png"><h3>Plumber</h3><p>Fix leaks, pipes, and installations with our trained plumbers.</p><a href="#"></a></div>
-      <div class="service-card"><img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80"><h3>House Painting</h3><p>Brighten your space with skilled painters for your walls.</p><a href="#"></a></div>
-      <div class="service-card"><img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80"><h3>Gardening</h3><p>Professional gardeners for lawn care, trimming, and maintenance.</p><a href="#"></a></div>
+    <div class="search-bar">
+      <form class="search-bar" action="/services" method="POST">
+        <input type="text" name="Category" placeholder="Search for services and packages" required>
+        <button type="submit" class="search-button">Search</button>
+      </form>
     </div>
   </section>
 
-  <!-- ===== CONTACT ===== -->
+  <section class="services" id="services">
+    <h2>Our Services</h2>
+    <div class="service-container">
+      <div class="service-card"><img src="https://www.goldmedalservice.com/wp-content/uploads/2022/06/Ceiling-Fan-Installation-Solutions-Technician-Image.jpg"><h3>Fan Repair</h3><p>Fast, reliable ceiling and table fan repair for homes and offices.</p>
+        <form action="/services" method="POST" style="margin:0 15px 20px;"><input type="hidden" name="Category" value="Fan Repair"><button type="submit" class="btn signup" style="width:100%;">Find Fan Repair</button></form><a href="#"></a></div>
+
+      <div class="service-card"><img src="https://sukwariya.com/wp-content/uploads/2022/09/air-conditioner-service-indoors-air-conditioner-cleaning-technician-he-opened-front-cover-took-out-f-1.jpg"><h3>AC Maintenance</h3><p>Keep cool with expert AC servicing and repair.</p>
+        <form action="/services" method="POST" style="margin:0 15px 20px;"><input type="hidden" name="Category" value="AC Maintenance"><button type="submit" class="btn signup" style="width:100%;">Find AC Maintenance</button></form><a href="#"></a></div>
+
+      <div class="service-card"><img src="https://www.healthyhomesutah.com/wp-content/uploads/Professional-House-Cleaning-Services-in-North-Ogden-Utah.jpg"><h3>Home cleaning</h3><p>Deep cleaning for every corner of your home or apartment.</p>
+        <form action="/services" method="POST" style="margin:0 15px 20px;"><input type="hidden" name="Category" value="Home cleaning"><button type="submit" class="btn signup" style="width:100%;">Find Home cleaning</button></form><a href="#"></a></div>
+
+      <div class="service-card"><img src="https://tse3.mm.bing.net/th/id/OIP.Bi6J6dp-WWKCrNU_Ux9dFwHaEQ?pid=Api&P=0&h=180"><h3>Car Driver</h3><p>Trusted and professional drivers for short or long-term needs.</p>
+        <form action="/services" method="POST" style="margin:0 15px 20px;"><input type="hidden" name="Category" value="driver"><button type="submit" class="btn signup" style="width:100%;">Find Drivers</button></form></div>
+
+      <div class="service-card"><img src="https://www.cve.com/wp-content/uploads/2023/02/electrician-terms-to-know.jpg"><h3>Electrician</h3><p>Certified electricians for wiring, lighting, and repair services.</p>
+        <form action="/services" method="POST" style="margin:0 15px 20px;"><input type="hidden" name="Category" value="electrician"><button type="submit" class="btn signup" style="width:100%;">Find Electricians</button></form></div>
+
+      <div class="service-card"><img src="https://img.magnific.com/free-vector/plumbing-service-advertising-banner-repairman-uniform-standing-with-wrench-hand-tools-box-near-sink_575670-1705.jpg?semt=ais_hybrid&w=740&q=80"><h3>Plumber</h3><p>Fix leaks, pipes, and installations with our trained plumbers.</p>
+        <form action="/services" method="POST" style="margin:0 15px 20px;"><input type="hidden" name="Category" value="plumber"><button type="submit" class="btn signup" style="width:100%;">Find Plumbers</button></form></div>
+
+      <div class="service-card"><img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80"><h3>House Painting</h3><p>Brighten your space with skilled painters for your walls.</p>
+        <form action="/services" method="POST" style="margin:0 15px 20px;"><input type="hidden" name="Category" value="House Painting"><button type="submit" class="btn signup" style="width:100%;">Find House Painting</button></form></div><a href="#"></a></div>
+        
+    </div>
+  </section>
+
   <section class="contact" id="contact">
     <h2>Contact Us</h2>
     <p>Need multiple services or urgent help? Email us at <strong>support@serviceprovider.com</strong> or click below to book instantly.</p>

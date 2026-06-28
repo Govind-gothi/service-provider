@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickFix Services</title>
+  <style>
+    /* Global Styles from your index.html */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      background-color: #f4f7f6;
+      color: #333;
+    }
+
+    /* Header Styles */
+    header {
+      background-color: rgba(0, 119, 182, 0.95);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .logo h1 {
+      font-size: 24px;
+      letter-spacing: 1px;
+    }
+    
+    .logo a {
+        color: white;
+        text-decoration: none;
+    }
+
+    .auth-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn {
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .btn.login { background: white; color: #0077b6; }
+    .btn.signup { background: #ffcc00; color: #333; }
+    .btn.work { background: #0077b6; color: white; border: 1px solid white; }
+    .btn:hover { opacity: 0.8; }
+    
+    /* Main Content Area */
+    main {
+        min-height: 80vh;
+    }
+    
+    /* Footer */
+    footer {
+      background: rgba(0, 119, 182, 0.95);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COMMON HEADER FOR ALL PAGES -->
+  <header>
+    <div class="logo">
+      <h1><a href="/">Service Provider</a></h1>
+    </div>
+
+    <!-- Action Buttons (Dynamic based on login) -->
+    <div class="auth-buttons">
+      {% if session.get('role') == 'customer' %}
+        <a href="/bookings"><button class="btn login">My Bookings</button></a>
+        <a href="{{ url_for('services_nearby') }}?category="><button class="btn login">📍 Nearby</button></a>
+        <a href="{{ url_for('top_rated_providers') }}"><button class="btn login">⭐ Top Rated</button></a>
+        <a href="/logout"><button class="btn work">Logout</button></a>
+        
+      {% elif session.get('role') == 'provider' %}
+        <a href="/provider/bookings"><button class="btn login">Dashboard</button></a>
+        <a href="{{ url_for('provider_payments') }}"><button class="btn login">💰 Earnings</button></a>
+        <a href="/logout"><button class="btn work">Logout</button></a>
+        
+      {% else %}
+        <a href="/login"><button class="btn login">Customer Login</button></a>
+        <a href="/signup"><button class="btn signup">Customer Sign Up</button></a>
+        <form action="/service_provider_login" method="GET" style="display: inline;">
+          <button class="btn login">Provider Login</button>
+        </form>
+        <a href="/Service_Provider"><button class="btn signup">Provider Sign Up</button></a>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- YAHAN BAAKI PAGES KA CONTENT AAYEGA -->
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- COMMON FOOTER -->
+  <footer>
+    &copy; 2024 QuickFix Services. All rights reserved.
+  </footer>
+
+</body>
+</html>

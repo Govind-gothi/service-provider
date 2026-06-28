@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .payment-wrapper { display: flex; justify-content: center; font-family: sans-serif; padding: 40px 20px; }
+  .payment-card { width: 100%; max-width: 500px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+  .payment-header { background: #007bff; color: white; padding: 20px; margin: 0; text-align: center; }
+  .payment-body { padding: 30px; }
+  
+  .summary-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 25px; }
+  .summary-box h4 { margin-top: 0; color: #333; font-size: 1.1rem; }
+  .summary-box p { margin: 8px 0; color: #555; }
+  .summary-amount { font-size: 1.4rem; color: #007bff; font-weight: bold; border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px !important; }
+
+  .form-group { margin-bottom: 20px; }
+  .form-label { display: block; font-weight: bold; margin-bottom: 10px; color: #333; }
+  
+  .radio-group { display: flex; flex-wrap: wrap; gap: 10px; }
+  .radio-label { display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 10px 15px; border: 1px solid #ccc; border-radius: 6px; background: #fff; transition: 0.2s; }
+  input[type="radio"] { accent-color: #007bff; }
+  input[type="radio"]:checked + .radio-label, .radio-label:has(input:checked) { border-color: #007bff; background: #e7f3fe; }
+  
+  .text-input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+  .btn-success { width: 100%; padding: 15px; font-size: 1.2rem; font-weight: bold; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+  .btn-success:hover { background: #218838; }
+
+  /* Pure CSS conditional display using :has() */
+  .txn-block { display: none; }
+  form:has(input[value="UPI"]:checked) .txn-block,
+  form:has(input[value="Card"]:checked) .txn-block {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<div class="payment-wrapper">
+  <div class="payment-card">
+    <h2 class="payment-header">Complete Payment</h2>
+    
+    <div class="payment-body">
+      <div class="summary-box">
+        <h4>Booking Summary</h4>
+        <p><strong>Provider:</strong> {{ booking.provider_name }}</p>
+        <p><strong>Service:</strong> {{ booking.Service_Category }}</p>
+        <p><strong>Date:</strong> {{ booking.Booking_Date }}</p>
+        <p><strong>Address:</strong> {{ booking.Address }}</p>
+        <p class="summary-amount">Amount: ₹{{ booking.Amount }}</p>
+      </div>
+
+      <form method="POST">
+        <div class="form-group">
+          <span class="form-label">Select Payment Method</span>
+          <div class="radio-group">
+            {% for method in allowed_methods %}
+            <label class="radio-label">
+              <input type="radio" name="payment_method" value="{{ method }}" required>
+              {{ method }}
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="form-group txn-block">
+          <label class="form-label" for="transaction_id">Transaction / UPI Reference ID</label>
+          <input type="text" id="transaction_id" name="transaction_id" class="text-input" placeholder="e.g. 123456789012">
+        </div>
+
+        <button type="submit" class="btn-success">Pay ₹{{ booking.Amount }}</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
