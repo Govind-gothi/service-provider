@@ -14,7 +14,7 @@ DB_CONFIG = {
     "port": int(os.getenv("3306")),
     "user": os.getenv("root"),
     "password": os.getenv("YvjRnPEbtPvRbvBySGNnhVUoEQiZQanA"),
-    "database": os.getenv("railwayE"),
+    "database": os.getenv("railway"),
 }
 
 
