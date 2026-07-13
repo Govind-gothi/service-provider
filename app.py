@@ -61,7 +61,7 @@ def login_required(role=None):
             if "user_id" not in session:
                 flash("Please log in to continue.", "error")
                 if role == "provider":
-                    return redirect(url_for("service_provider_login"))
+                    return redirect(url_for("Service_Provider_login"))
                 return redirect(url_for("login"))
             if role and session.get("role") != role:
                 flash("You do not have access to that page.", "error")
@@ -74,7 +74,7 @@ def login_required(role=None):
 def get_provider_by_id(provider_id):
     mydb = get_db()
     mycursor = mydb.cursor(dictionary=True)
-    mycursor.execute("SELECT * FROM service_provider WHERE ProviderID = %s", (provider_id,))
+    mycursor.execute("SELECT * FROM Service_Provider WHERE ProviderID = %s", (provider_id,))
     provider = mycursor.fetchone()
     mycursor.close()
     mydb.close()
@@ -84,7 +84,7 @@ def get_provider_by_id(provider_id):
 def get_customer_by_id(customer_id):
     mydb = get_db()
     mycursor = mydb.cursor(dictionary=True)
-    mycursor.execute("SELECT * FROM customer WHERE CustomerID = %s", (customer_id,))
+    mycursor.execute("SELECT * FROM customer WHERE customerID = %s", (customer_id,))
     customer = mycursor.fetchone()
     mycursor.close()
     mydb.close()
@@ -257,8 +257,8 @@ def services():
     return render_template('services.html', results=result, category=category)
 
 
-@app.route('/service_provider_login', methods=['GET', 'POST'])
-def service_provider_login():
+@app.route('/Service_Provider_login', methods=['GET', 'POST'])
+def Service_Provider_login():
     msg = None
     if request.method == 'GET':
         return render_template('Service_Provider_login.html', msg=msg)
@@ -318,7 +318,7 @@ def logout():
 def update_profile(ProviderID):
     if request.method == "GET":
         account = get_data_from_db(ProviderID=ProviderID)
-        return render_template('service_provider_profile.html', account=account)
+        return render_template('Service_Provider_profile.html', account=account)
 
     mydb = get_db()
 
@@ -336,7 +336,7 @@ def update_profile(ProviderID):
 
             mycursor = mydb.cursor()
             mycursor.execute("""
-                UPDATE service_provider SET
+                UPDATE Service_Provider SET
                     First_Name=%s, Last_Name=%s, Email=%s, Phone_Number=%s,
                     Date_Of_Birth=%s, City=%s, State=%s, Pincode=%s,Category=%s
                 WHERE ProviderID=%s
@@ -378,7 +378,7 @@ def update_password(ProviderID):
             if new_password == confirm_password:
                 try:
                     mycursor = mydb.cursor()
-                    mycursor.execute("UPDATE service_provider SET Password=%s WHERE ProviderID=%s", (new_password, ProviderID))
+                    mycursor.execute("UPDATE Service_Provider SET Password=%s WHERE ProviderID=%s", (new_password, ProviderID))
                     mydb.commit()
                     mycursor.close()
                     flash('Password updated successfully!', 'success')
@@ -444,7 +444,7 @@ def hire():
         mycursor = mydb.cursor()
         sql = """
             INSERT INTO bookings
-            (CustomerID, ProviderID, Service_Category, Booking_Date, Start_Time, End_Time, Address, Amount, Status)
+            (customerID, ProviderID, Service_Category, Booking_Date, Start_Time, End_Time, Address, Amount, Status)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'Pending')
         """
         values = (
@@ -471,8 +471,8 @@ def bookings():
     mycursor.execute("""
         SELECT b.*, CONCAT(sp.First_Name, ' ', sp.Last_Name) AS provider_name
         FROM bookings b
-        JOIN service_provider sp ON b.ProviderID = sp.ProviderID
-        WHERE b.CustomerID = %s
+        JOIN Service_Provider sp ON b.ProviderID = sp.ProviderID
+        WHERE b.customerID = %s
         ORDER BY b.Booking_Date DESC, b.Start_Time DESC
     """, (session['user_id'],))
     rows = mycursor.fetchall()
@@ -496,7 +496,7 @@ def provider_bookings():
     mycursor.execute("""
         SELECT b.*, CONCAT(c.First_Name, ' ', c.Last_Name) AS customer_name
         FROM bookings b
-        JOIN customer c ON b.CustomerID = c.CustomerID
+        JOIN customer c ON b.customerID = c.customerID
         WHERE b.ProviderID = %s
         ORDER BY
             FIELD(b.Status, 'Pending', 'Accepted', 'In Progress', 'Completed', 'Rejected'),
@@ -510,7 +510,7 @@ def provider_bookings():
     """, (provider_id,))
     earnings = mycursor.fetchone()['total']
 
-    mycursor.execute("SELECT Availability_Status FROM service_provider WHERE ProviderID = %s", (provider_id,))
+    mycursor.execute("SELECT Availability_Status FROM Service_Provider WHERE ProviderID = %s", (provider_id,))
     provider_row = mycursor.fetchone()
     availability = provider_row.get('Availability_Status', 'Available') if provider_row else 'Available'
 
@@ -604,7 +604,7 @@ def update_availability():
     mydb = get_db()
     mycursor = mydb.cursor()
     mycursor.execute(
-        "UPDATE service_provider SET Availability_Status = %s WHERE ProviderID = %s",
+        "UPDATE Service_Provider SET Availability_Status = %s WHERE ProviderID = %s",
         (status, session['user_id'])
     )
     mydb.commit()
@@ -649,7 +649,7 @@ def services_nearby():
                        City, State, Pincode, Availability_Status,
                        Latitude, Longitude, Service_Radius,
                        Avg_Rating, Review_Count
-                FROM service_provider
+                FROM Service_Provider
                 WHERE LOWER(Category) LIKE LOWER(%s)
                   AND Availability_Status != 'Offline'"""
     params = [f"%{category}%"]
@@ -704,7 +704,7 @@ def update_customer_location():
     mydb     = get_db()
     mycursor = mydb.cursor()
     mycursor.execute(
-        "UPDATE customer SET Latitude=%s, Longitude=%s WHERE CustomerID=%s",
+        "UPDATE customer SET Latitude=%s, Longitude=%s WHERE customerID=%s",
         (float(lat), float(lng), session['user_id'])
     )
     mydb.commit()
@@ -729,7 +729,7 @@ def update_provider_location():
     mydb     = get_db()
     mycursor = mydb.cursor()
     mycursor.execute(
-        "UPDATE service_provider SET Latitude=%s, Longitude=%s, Service_Radius=%s WHERE ProviderID=%s",
+        "UPDATE Service_Provider SET Latitude=%s, Longitude=%s, Service_Radius=%s WHERE ProviderID=%s",
         (float(lat), float(lng), int(radius), session['user_id'])
     )
     mydb.commit()
@@ -754,8 +754,8 @@ def pay_booking(booking_id):
     mycursor.execute("""
         SELECT b.*, CONCAT(sp.First_Name,' ',sp.Last_Name) AS provider_name
         FROM bookings b
-        JOIN service_provider sp ON b.ProviderID = sp.ProviderID
-        WHERE b.BookingID=%s AND b.CustomerID=%s
+        JOIN Service_Provider sp ON b.ProviderID = sp.ProviderID
+        WHERE b.BookingID=%s AND b.customerID=%s
     """, (booking_id, session['user_id']))
     booking = mycursor.fetchone()
 
@@ -785,7 +785,7 @@ def pay_booking(booking_id):
         # Insert into payments table
         mycursor.execute("""
             INSERT INTO payments
-                (BookingID, CustomerID, Amount, Payment_Method, Payment_Status, Transaction_ID)
+                (BookingID, customerID, Amount, Payment_Method, Payment_Status, Transaction_ID)
             VALUES (%s, %s, %s, %s, 'Completed', %s)
             ON DUPLICATE KEY UPDATE
                 Payment_Status='Completed', Transaction_ID=VALUES(Transaction_ID),
@@ -824,7 +824,7 @@ def provider_payments():
                CONCAT(c.First_Name,' ',c.Last_Name) AS customer_name
         FROM payments p
         JOIN bookings b ON p.BookingID = b.BookingID
-        JOIN customer c ON p.CustomerID = c.CustomerID
+        JOIN customer c ON p.customerID = c.customerID
         WHERE b.ProviderID = %s
         ORDER BY p.Payment_Date DESC
     """, (session['user_id'],))
@@ -903,8 +903,8 @@ def submit_review(booking_id):
         SELECT b.*, CONCAT(sp.First_Name,' ',sp.Last_Name) AS provider_name,
                sp.ProviderID
         FROM bookings b
-        JOIN service_provider sp ON b.ProviderID = sp.ProviderID
-        WHERE b.BookingID=%s AND b.CustomerID=%s AND b.Status='Completed'
+        JOIN Service_Provider sp ON b.ProviderID = sp.ProviderID
+        WHERE b.BookingID=%s AND b.customerID=%s AND b.Status='Completed'
     """, (booking_id, session['user_id']))
     booking = mycursor.fetchone()
 
@@ -930,7 +930,7 @@ def submit_review(booking_id):
             return render_template('review_form.html', booking=booking)
 
         mycursor.execute("""
-            INSERT INTO reviews (BookingID, CustomerID, ProviderID, Rating, Review_Text)
+            INSERT INTO reviews (BookingID, customerID, ProviderID, Rating, Review_Text)
             VALUES (%s, %s, %s, %s, %s)
         """, (booking_id, session['user_id'], booking['ProviderID'], int(rating), review_text))
         mydb.commit()
@@ -952,7 +952,7 @@ def provider_reviews(provider_id):
     mycursor.execute("""
         SELECT sp.First_Name, sp.Last_Name, sp.Category,
                sp.Avg_Rating, sp.Review_Count, sp.Base_Price, sp.City, sp.State
-        FROM service_provider sp
+        FROM Service_Provider sp
         WHERE sp.ProviderID = %s
     """, (provider_id,))
     provider = mycursor.fetchone()
@@ -966,7 +966,7 @@ def provider_reviews(provider_id):
         SELECT r.Rating, r.Review_Text, r.Created_At,
                CONCAT(c.First_Name,' ',c.Last_Name) AS customer_name
         FROM reviews r
-        JOIN customer c ON r.CustomerID = c.CustomerID
+        JOIN customer c ON r.customerID = c.customerID
         WHERE r.ProviderID = %s
         ORDER BY r.Created_At DESC
     """, (provider_id,))
@@ -991,7 +991,7 @@ def top_rated_providers():
         SELECT ProviderID, First_Name, Last_Name, Category,
                Base_Price, City, State, Availability_Status,
                Avg_Rating, Review_Count
-        FROM service_provider
+        FROM Service_Provider
         WHERE Availability_Status != 'Offline'
           AND Review_Count > 0
     """
