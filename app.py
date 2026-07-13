@@ -9,16 +9,13 @@ import os
 app = Flask(__name__)
 app.secret_key = 'service-provider-marketplace-secret-key'
 
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST"),
-    "port": int(os.getenv("DB_PORT")),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "database": os.getenv("DB_NAME")
-}
-
-
 def get_db():
+    print("DB_CONFIG =", DB_CONFIG)
+    print("DB_HOST =", os.getenv("DB_HOST"))
+    print("DB_PORT =", os.getenv("DB_PORT"))
+    print("DB_USER =", os.getenv("DB_USER"))
+    print("DB_NAME =", os.getenv("DB_NAME"))
+
     return mysql.connector.connect(**DB_CONFIG)
 
 
