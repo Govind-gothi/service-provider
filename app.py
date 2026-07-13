@@ -4,16 +4,17 @@ import mysql.connector
 import re
 from datetime import datetime, time, timedelta
 from functools import wraps
+import os
 
 app = Flask(__name__)
 app.secret_key = 'service-provider-marketplace-secret-key'
 
 DB_CONFIG = {
-    "host": "127.0.0.1",
-    "port": "3306",
-    "user": "root",
-    "password": "54321",
-    "database": "service_booking_db",
+    "host": os.getenv("mysql.railway.internal"),
+    "port": int(os.getenv("3306")),
+    "user": os.getenv("root"),
+    "password": os.getenv("YvjRnPEbtPvRbvBySGNnhVUoEQiZQanA"),
+    "database": os.getenv("railwayE"),
 }
 
 
