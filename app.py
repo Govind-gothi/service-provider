@@ -27,6 +27,7 @@ def get_db():
     return mysql.connector.connect(**DB_CONFIG)
 
 
+
 def td_to_time(td):
     if isinstance(td, time):
         return td
@@ -274,7 +275,7 @@ def service_provider_login():
             session['user_id'] = account[0]
             session['role'] = 'provider'
             session['name'] = f"{account[1]} {account[2]}"
-            return redirect(url_for('provider_bookings'))
+            return redirect(url_for('profile'))
         msg = 'Incorrect username/password!'
         return render_template('service_provider_login.html', msg=msg)
 
@@ -299,7 +300,7 @@ def login():
             session['user_id'] = account[0]
             session['role'] = 'customer'
             session['name'] = f"{account[1]} {account[2]}"
-            return redirect(url_for('bookings'))
+            return redirect(url_for('profile'))
         msg = 'Incorrect username/password!'
         return render_template('login.html', msg=msg)
 
@@ -311,8 +312,28 @@ def logout():
     return redirect(url_for('home'))
 
 
+@app.route('/profile')
+@login_required()
+def profile():
+    """Single entry point for 'View my profile'. Sends the logged-in user
+    to the profile page that matches their role, using their own ID from
+    the session (never trusts a client-supplied ID)."""
+    if session.get('role') == 'provider':
+        return redirect(url_for('update_profile', ProviderID=session['user_id']))
+    if session.get('role') == 'customer':
+        return redirect(url_for('customer_profile', CustomerID=session['user_id']))
+    return redirect(url_for('home'))
+
+
 @app.route('/update_profile/<int:ProviderID>', methods=['GET', 'POST'])
+@login_required(role="provider")
 def update_profile(ProviderID):
+    # A provider may only view/edit their own profile, regardless of what
+    # ID appears in the URL.
+    if ProviderID != session['user_id']:
+        flash("You can only access your own profile.", "error")
+        return redirect(url_for('update_profile', ProviderID=session['user_id']))
+
     if request.method == "GET":
         account = get_data_from_db(ProviderID=ProviderID)
         return render_template('service_provider_profile.html', account=account)
@@ -361,7 +382,12 @@ def get_data_from_db(**kwargs):
 
 
 @app.route('/update_password/<int:ProviderID>', methods=['GET', 'POST'])
+@login_required(role="provider")
 def update_password(ProviderID):
+    if ProviderID != session['user_id']:
+        flash("You can only access your own account.", "error")
+        return redirect(url_for('update_password', ProviderID=session['user_id']))
+
     if request.method == "GET":
         account = get_data_from_db(ProviderID=ProviderID)
         return render_template('more_setting.html', account=account)
@@ -389,6 +415,52 @@ def update_password(ProviderID):
 
         return redirect(url_for('update_password', ProviderID=ProviderID))
     return redirect(url_for('update_password', ProviderID=ProviderID))
+
+
+@app.route('/customer_profile/<int:CustomerID>', methods=['GET', 'POST'])
+@login_required(role="customer")
+def customer_profile(CustomerID):
+    # A customer may only view/edit their own profile, regardless of what
+    # ID appears in the URL.
+    if CustomerID != session['user_id']:
+        flash("You can only access your own profile.", "error")
+        return redirect(url_for('customer_profile', CustomerID=session['user_id']))
+
+    if request.method == 'POST':
+        required = ['First_Name', 'Last_Name', 'Email', 'Phone_Number',
+                    'City', 'State', 'Pincode', 'Date_Of_Birth']
+        if all(field in request.form for field in required):
+            First_Name = request.form['First_Name']
+            Last_Name = request.form['Last_Name']
+            Email = request.form['Email']
+            Phone_Number = request.form['Phone_Number']
+            Date_Of_Birth = request.form['Date_Of_Birth']
+            City = request.form['City']
+            State = request.form['State']
+            Pincode = request.form['Pincode']
+
+            mydb = get_db()
+            mycursor = mydb.cursor()
+            mycursor.execute("""
+                UPDATE customer SET
+                    First_Name=%s, Last_Name=%s, Email=%s, Phone_Number=%s,
+                    Date_Of_Birth=%s, City=%s, State=%s, Pincode=%s
+                WHERE CustomerID=%s
+            """, (
+                First_Name, Last_Name, Email, Phone_Number, Date_Of_Birth,
+                City, State, Pincode, CustomerID
+            ))
+            mydb.commit()
+            mycursor.close()
+            mydb.close()
+
+            # Keep the session display name in sync with any edit.
+            session['name'] = f"{First_Name} {Last_Name}"
+            flash("Profile updated successfully!", "success")
+        return redirect(url_for('customer_profile', CustomerID=CustomerID))
+
+    account = get_customer_by_id(CustomerID)
+    return render_template('customer_profile.html', account=account)
 
 
 @app.route("/hire", methods=["GET", "POST"])

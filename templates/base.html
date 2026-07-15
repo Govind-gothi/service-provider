@@ -94,11 +94,13 @@
         <a href="/bookings"><button class="btn login">My Bookings</button></a>
         <a href="{{ url_for('services_nearby') }}?category="><button class="btn login">📍 Nearby</button></a>
         <a href="{{ url_for('top_rated_providers') }}"><button class="btn login">⭐ Top Rated</button></a>
+        <a href="{{ url_for('profile') }}"><button class="btn login">👤 My Profile</button></a>
         <a href="/logout"><button class="btn work">Logout</button></a>
         
       {% elif session.get('role') == 'provider' %}
         <a href="/provider/bookings"><button class="btn login">Dashboard</button></a>
         <a href="{{ url_for('provider_payments') }}"><button class="btn login">💰 Earnings</button></a>
+        <a href="{{ url_for('profile') }}"><button class="btn login">👤 My Profile</button></a>
         <a href="/logout"><button class="btn work">Logout</button></a>
         
       {% else %}
@@ -107,7 +109,7 @@
         <form action="/service_provider_login" method="GET" style="display: inline;">
           <button class="btn login">Provider Login</button>
         </form>
-        <a href="/Service_Provider"><button class="btn signup">Provider Sign Up</button></a>
+        <a href="/service_provider"><button class="btn signup">Provider Sign Up</button></a>
       {% endif %}
     </div>
   </header>

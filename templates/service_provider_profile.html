@@ -2037,8 +2037,19 @@
 </style>
 
 <body>
-  <!-- <form action="/service_provider_profile" method="POST"> -->
   <div class="main-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="container-fluid pt-3">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
     <!-- Top navbar -->
     <nav class="navbar navbar-top navbar-expand-md navbar-dark" id="navbar-main">
       <div class="container-fluid">
@@ -2075,24 +2086,16 @@
               <div class=" dropdown-header noti-title">
                 <h6 class="text-overflow m-0">Welcome!</h6>
               </div>
-              <a href="../examples/profile.html" class="dropdown-item">
+              <a href="{{ url_for('profile') }}" class="dropdown-item">
                 <i class="ni ni-single-02"></i>
                 <span>My profile</span>
               </a>
-              <a href="../examples/profile.html" class="dropdown-item">
+              <a href="{{ url_for('update_password', ProviderID=account[0]) }}" class="dropdown-item">
                 <i class="ni ni-settings-gear-65"></i>
                 <span>Settings</span>
               </a>
-              <a href="../examples/profile.html" class="dropdown-item">
-                <i class="ni ni-calendar-grid-58"></i>
-                <span>Activity</span>
-              </a>
-              <a href="../examples/profile.html" class="dropdown-item">
-                <i class="ni ni-support-16"></i>
-                <span>Support</span>
-              </a>
               <div class="dropdown-divider"></div>
-              <a href="#!" class="dropdown-item">
+              <a href="{{ url_for('logout') }}" class="dropdown-item">
                 <i class="ni ni-user-run"></i>
                 <span>Logout</span>
               </a>
@@ -2185,15 +2188,15 @@ We offer professional and verified service experts who deliver quick response an
                   <h3 class="mb-0">My account</h3>
                 </div>
                 <div class="col-4 text-right">
-                  <a href="/provider/bookings" class="btn btn-sm btn-success">Bookings Dashboard</a>
-                  <form action="/update_password/{{account[0]}}" method="GET" style="display:inline;">
+                  <a href="{{ url_for('provider_bookings') }}" class="btn btn-sm btn-success">Bookings Dashboard</a>
+                  <form action="{{ url_for('update_password', ProviderID=account[0]) }}" method="GET" style="display:inline;">
                     <button class="btn btn-sm btn-primary" type="submit">Update Password</button>
                   </form>
                 </div>
               </div>
             </div>            
             <div class="card-body">
-              <form action="/update_profile/{{account[0]}}" method="POST">
+              <form action="{{ url_for('update_profile', ProviderID=account[0]) }}" method="POST">
                 <h6 class="heading-small text-muted mb-4">User information</h6>
                 <div class="pl-lg-4">
                   <div class="row">
