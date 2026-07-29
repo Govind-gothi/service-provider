@@ -9,34 +9,34 @@ import os
 app = Flask(__name__)
 app.secret_key = 'service-provider-marketplace-secret-key'
 
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST"),
-    "port": int(os.getenv("DB_PORT")),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "database": os.getenv("DB_NAME")
-}
-
-def get_db():
-    print("DB_CONFIG =", DB_CONFIG)
-    print("DB_HOST =", os.getenv("DB_HOST"))
-    print("DB_PORT =", os.getenv("DB_PORT"))
-    print("DB_USER =", os.getenv("DB_USER"))
-    print("DB_NAME =", os.getenv("DB_NAME"))
-
-    return mysql.connector.connect(**DB_CONFIG)
-
-
-
 # DB_CONFIG = {
-#     "host": "127.0.0.1",
-#     "port": "3306",
-#     "user": "root",
-#     "password": "54321",
-#     "database": "service_booking_db",
+#     "host": os.getenv("DB_HOST"),
+#     "port": int(os.getenv("DB_PORT")),
+#     "user": os.getenv("DB_USER"),
+#     "password": os.getenv("DB_PASSWORD"),
+#     "database": os.getenv("DB_NAME")
 # }
+
 # def get_db():
+#     print("DB_CONFIG =", DB_CONFIG)
+#     print("DB_HOST =", os.getenv("DB_HOST"))
+#     print("DB_PORT =", os.getenv("DB_PORT"))
+#     print("DB_USER =", os.getenv("DB_USER"))
+#     print("DB_NAME =", os.getenv("DB_NAME"))
+
 #     return mysql.connector.connect(**DB_CONFIG)
+
+
+
+DB_CONFIG = {
+    "host": "127.0.0.1",
+    "port": "3306",
+    "user": "root",
+    "password": "54321",
+    "database": "service_booking_db",
+}
+def get_db():
+    return mysql.connector.connect(**DB_CONFIG)
 
 
 
@@ -215,7 +215,7 @@ def service_provider():
 
             if Password != confirm_Password:
                 msg = "Passwords do not match!"
-                return render_template('service_provider.html', msg=msg)
+                return render_template('Service_Provider.html', msg=msg)
 
             mydb = get_db()
             mycursor = mydb.cursor()
@@ -226,17 +226,17 @@ def service_provider():
                 msg = 'Account already exists!'
                 mycursor.close()
                 mydb.close()
-                return render_template('service_provider.html', msg=msg)
+                return render_template('Service_Provider.html', msg=msg)
             elif not re.match(r'[^@]+@[^@]+\.[^@]+', Email):
                 msg = 'Invalid email address!'
                 mycursor.close()
                 mydb.close()
-                return render_template('service_provider.html', msg=msg)
+                return render_template('Service_Provider.html', msg=msg)
             elif not First_Name or not Password or not Email:
                 msg = 'Please fill out the form!'
                 mycursor.close()
                 mydb.close()
-                return render_template('service_provider.html', msg=msg)
+                return render_template('Service_Provider.html', msg=msg)
             else:
                 sql = "INSERT INTO service_provider (First_Name, Last_Name, Email, Phone_Number,Date_Of_Birth,City,State, Pincode, Password,Category, Base_Price) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)"
                 val = [(First_Name, Last_Name, Email, Phone_Number, Date_Of_Birth, City, State, Pincode, Password, Category, Base_Price)]
