@@ -28,6 +28,18 @@ def get_db():
 
 
 
+# DB_CONFIG = {
+#     "host": "127.0.0.1",
+#     "port": "3306",
+#     "user": "root",
+#     "password": "54321",
+#     "database": "service_booking_db",
+# }
+# def get_db():
+#     return mysql.connector.connect(**DB_CONFIG)
+
+
+
 def td_to_time(td):
     if isinstance(td, time):
         return td
