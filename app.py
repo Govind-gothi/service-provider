@@ -215,7 +215,7 @@ def service_provider():
 
             if Password != confirm_Password:
                 msg = "Passwords do not match!"
-                return render_template('Service_Provider.html', msg=msg)
+                return render_template('service_provider.html', msg=msg)
 
             mydb = get_db()
             mycursor = mydb.cursor()
@@ -226,17 +226,17 @@ def service_provider():
                 msg = 'Account already exists!'
                 mycursor.close()
                 mydb.close()
-                return render_template('Service_Provider.html', msg=msg)
+                return render_template('service_provider.html', msg=msg)
             elif not re.match(r'[^@]+@[^@]+\.[^@]+', Email):
                 msg = 'Invalid email address!'
                 mycursor.close()
                 mydb.close()
-                return render_template('Service_Provider.html', msg=msg)
+                return render_template('service_provider.html', msg=msg)
             elif not First_Name or not Password or not Email:
                 msg = 'Please fill out the form!'
                 mycursor.close()
                 mydb.close()
-                return render_template('Service_Provider.html', msg=msg)
+                return render_template('service_provider.html', msg=msg)
             else:
                 sql = "INSERT INTO service_provider (First_Name, Last_Name, Email, Phone_Number,Date_Of_Birth,City,State, Pincode, Password,Category, Base_Price) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)"
                 val = [(First_Name, Last_Name, Email, Phone_Number, Date_Of_Birth, City, State, Pincode, Password, Category, Base_Price)]
